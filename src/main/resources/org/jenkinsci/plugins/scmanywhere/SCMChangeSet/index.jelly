@@ -1,4 +1,4 @@
-<?jelly escape-by-default='true'?>
+
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
   <h2>${%Summary}</h2>
   <ol>
@@ -13,7 +13,7 @@
           <a name="detail${loop.index}"></a>
           <div class="changeset-message">
             <b>
-              ${%Version} ${cs.version} by <a href="${rootURL}/${cs.author.url}/">${cs.author}</a>:
+              ${%Version} ${cs.version} by <a href="${rootURL}/${cs.user.url}/">${cs.user}</a>:
             </b><br/>
             ${cs.msgAnnotated}
           </div>
