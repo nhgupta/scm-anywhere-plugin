@@ -10,10 +10,12 @@ import java.util.Collection;
 import java.util.List;
 
 import org.kohsuke.stapler.export.Exported;
+import org.kohsuke.stapler.export.ExportedBean;
 
 /**
  * This contain all the changes in the workspace. These objects are used to build the change log page.
  */
+@ExportedBean(defaultVisibility = 999)
 public class SCMChangeLogEntry extends ChangeLogSet.Entry {
     private final String changeSetId;
     private final String user;
@@ -74,6 +76,7 @@ public class SCMChangeLogEntry extends ChangeLogSet.Entry {
     /**
      * Returns type of action on the file
      */
+    @Exported
     public String getAction() {
         return action;
     }
@@ -81,6 +84,7 @@ public class SCMChangeLogEntry extends ChangeLogSet.Entry {
     /**
      * Returns comments on the file
      */
+    @Exported
     public String getComments() {
         return comments;
     }
@@ -137,6 +141,7 @@ public class SCMChangeLogEntry extends ChangeLogSet.Entry {
         };
     }
 
+    @Exported
     public String getChangeSetId() {
         return changeSetId;
     }
@@ -149,10 +154,10 @@ public class SCMChangeLogEntry extends ChangeLogSet.Entry {
         public static final EditType EDITED = new EditType("EDITED", "The file was edited");
         public static final EditType CREATED = new EditType("CREATED", "The file was created");
         public static final EditType ADDED = new EditType("ADDED", "The file was added");
-        public static final EditType DELETED = new EditType("DELETED , PURGED", "The file was deleted and purged");
+        public static final EditType DELETED = new EditType("DELETED", "The file was deleted");
+        public static final EditType DELETED_PURGED = new EditType("DELETED , PURGED", "The file was deleted and purged");
         public static final EditType PARENT_DELETED = new EditType("PARENT DELETED ", "The parent file was deleted");
-        public static final EditType PARENT_DELETED_PURGED = new EditType("PARENT DELETED , PURGED",
-                "The parent file was deleted and purged");
+        public static final EditType PARENT_DELETED_PURGED = new EditType("PARENT DELETED , PURGED", "The parent file was deleted and purged");
         private final String path;
         private final char action;
 
@@ -170,6 +175,7 @@ public class SCMChangeLogEntry extends ChangeLogSet.Entry {
         /**
          * Returns the path of the file.
          */
+        @Exported
         public String getPath() {
             return path;
         }
@@ -177,6 +183,7 @@ public class SCMChangeLogEntry extends ChangeLogSet.Entry {
         /**
          * Returns the action performed on the file.
          */
+        @Exported
         public char getAction() {
             return action;
         }
@@ -189,11 +196,13 @@ public class SCMChangeLogEntry extends ChangeLogSet.Entry {
             if (action == 'A') {
                 return ADDED;
             } else if (action == 'D') {
-                return EditType.DELETE;
+                return DELETED;
             } else if (action == 'E') {
                 return EDITED;
             } else if (action == 'C') {
                 return CREATED;
+            } else if (action == 'U') {
+                return DELETED_PURGED;
             } else if (action == 'P') {
                 return PARENT_DELETED;
             } else if (action == 'G') {

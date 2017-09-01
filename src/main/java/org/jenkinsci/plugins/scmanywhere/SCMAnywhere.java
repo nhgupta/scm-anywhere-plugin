@@ -307,7 +307,7 @@ public class SCMAnywhere extends SCM implements Serializable {
             	output.print("Succesful pooling\n");
             output.print(byteArray);
 
-            String loggingData = byteArray.toString("8859-1");
+            String loggingData = byteArray.toString();
             String[] splitLines = loggingData.split("\n");
 
             if (splitLines.length != 0) {
@@ -409,7 +409,7 @@ public class SCMAnywhere extends SCM implements Serializable {
             listener.getLogger().print("Succesful got the change log\n");
         // listener.getLogger().print("Get the project logging " + changeSetbyteArray + "\n");
 
-        String loggingData = changeSetbyteArray.toString("8859-1");
+        String loggingData = changeSetbyteArray.toString();
         String[] splitLines = loggingData.split("\n");
 
         int highestChangeSetID = 0;
@@ -432,8 +432,9 @@ public class SCMAnywhere extends SCM implements Serializable {
         final SCMAnyWhereRevisionState currentState = new SCMAnyWhereRevisionState(String.valueOf(highestChangeSetID), dateTime);
         build.addAction(currentState);
 
+        listener.getLogger().print("Previous State :" + previousState.getRevNo() + " " + previousState.getRevDateTime());
+        listener.getLogger().print("Current State :" + highestChangeSetID + " " + dateTime);
         if (changelogFile != null) {
-            // listener.getLogger().printf(" ChangelogFile "+ changelogFile + "\n");
             SCMChangeLogParser.saveChangeLog(previousState, changelogFile, repoDir, changeSetbyteArray, DetailbyteArray, listener);
         }
 
