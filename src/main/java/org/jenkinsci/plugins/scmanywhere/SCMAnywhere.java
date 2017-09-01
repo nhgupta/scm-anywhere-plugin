@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Serializable;
 import java.util.Map;
-import java.util.logging.Logger;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -55,7 +54,6 @@ public class SCMAnywhere extends SCM implements Serializable {
     private String teamproject;
     @CheckForNull
     private String folder;
-    private static final Logger logger = Logger.getLogger(SCMAnywhere.class.getName());
     private static final long serialVersionUID = 1L;
 
     @DataBoundConstructor

@@ -1,13 +1,14 @@
 package org.jenkinsci.plugins.scmanywhere;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.digester.Digester;
 import org.jenkinsci.plugins.scmanywhere.SCMChangeLogEntry.ModifiedFile;
 import org.xml.sax.SAXException;
 import com.thoughtworks.xstream.io.StreamException;
@@ -16,7 +17,6 @@ import hudson.model.AbstractBuild;
 import hudson.model.TaskListener;
 import hudson.scm.ChangeLogParser;
 import hudson.util.AtomicFileWriter;
-import hudson.util.Digester2;
 import hudson.util.XStream2;
 
 class SCMChangeLogParser extends ChangeLogParser {
@@ -26,33 +26,43 @@ class SCMChangeLogParser extends ChangeLogParser {
 	private static String comment = "";
 	private static String filename;
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public SCMChangeSet parse(final AbstractBuild build, final File changelogFile) throws IOException, SAXException {
 
-		Digester digester = new Digester2();
-		ArrayList<SCMChangeLogEntry> logEntry = new ArrayList<SCMChangeLogEntry>();
-		digester.push(logEntry);
+		final List<SCMChangeLogEntry> logEntry;
+		final XStream2 xs = new XStream2();
+		final Reader reader = new BufferedReader(new InputStreamReader(new FileInputStream(changelogFile), "UTF-8"));
+		try {
+			final Object obj = xs.fromXML(reader);
+			logEntry = (List<SCMChangeLogEntry>) obj;
+		} finally {
+			reader.close();
+		}
+		return new SCMChangeSet(build, logEntry);
+		//Digester digester = new Digester2();
+		//ArrayList<SCMChangeLogEntry> logEntry = new ArrayList<SCMChangeLogEntry>();
+		//digester.push(logEntry);
 		
 		
 		// When digester reads a {{<changeset>}} node it will create a {{SCMChangeLogEntry}} object
-		digester.addObjectCreate("*/changeset", SCMChangeLogEntry.class);
+	//	digester.addObjectCreate("*/changeset", SCMChangeLogEntry.class);
 		// Reads all attributes in the {{<changeset>}} node and uses setter method in class to set the values
-		digester.addSetProperties("*/changeset");
+	//	digester.addSetProperties("*/changeset");
 		// Reads the child node {{<comment>}} and uses {{SCMChangeLogEntry.setComment()}} to set the value
-		digester.addBeanPropertySetter("*/changeset/comment");
-		digester.addBeanPropertySetter("*/changeset/user");
+	//	digester.addBeanPropertySetter("*/changeset/comment");
+	//	digester.addBeanPropertySetter("*/changeset/user");
 		// Reading the {{<date<}} child node will use the {{SCMChangeLogEntry.setDateStr()}} method
 		// instead of the default {{SCMChangeLogEntry.setDate()}}
-		digester.addBeanPropertySetter("*/changeset/date", "dateStr");
+	//	digester.addBeanPropertySetter("*/changeset/dateTime", "dateTime");
 		// The digested node/change set is added to the list through {{List.add()}}
-		digester.addSetNext("*/changeset", "add");
+	//	digester.addSetNext("*/changeset", "add");
 		// When digester reads a {{<items>}} child node of {{<changeset}} it will create a {{SCMChangeLogEntry.ModifiedFile}} object
-		digester.addObjectCreate("*/changeset/items/item", SCMChangeLogEntry.ModifiedFile.class);
-		digester.addSetProperties("*/changeset/items/item");
-		digester.addBeanPropertySetter("*/changeset/items/item", "path");
+	//	digester.addObjectCreate("*/changeset/items/item", SCMChangeLogEntry.ModifiedFile.class);
+		//digester.addSetProperties("*/changeset/items/item");
+	//	digester.addBeanPropertySetter("*/changeset/items/item", "path");
 		// The digested node/item is added to the change set through {{SCMChangeLogEntry.add()}}
-		digester.addSetNext("*/changeset/items/item", "add");
+	//	digester.addSetNext("*/changeset/items/item", "add");
 		
 		
 		//digester.addObjectCreate("*/changeset", SCMChangeLogEntry.class);
@@ -67,14 +77,14 @@ class SCMChangeLogParser extends ChangeLogParser {
 		//digester.addBeanPropertySetter("*/changeset/parents Delete");
 		//digester.addSetNext("*/changeset", "add");
 
-		FileInputStream stream = new FileInputStream(changelogFile);
-		InputStreamReader reader = new InputStreamReader(stream);;
+	//	FileInputStream stream = new FileInputStream(changelogFile);
+	//	InputStreamReader reader = new InputStreamReader(stream);;
 		
 		// Do the actual parsing
-		digester.parse(reader);
-		reader.close();
-		stream.close();
-		return new SCMChangeSet(build, logEntry);
+	//	digester.parse(reader);
+	//	reader.close();
+	//	stream.close();
+	//	return new SCMChangeSet(build, logEntry);
 	}
 
 	/*
